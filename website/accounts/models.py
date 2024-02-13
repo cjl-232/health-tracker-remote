@@ -12,6 +12,6 @@ class CustomUser(AbstractUser):
     
     class Meta:
         db_table = 'users'
-        db_table_comment = 'User accounts'
+        db_table_comment = 'User Accounts'
         verbose_name = 'User'
         verbose_name_plural = 'Users'
