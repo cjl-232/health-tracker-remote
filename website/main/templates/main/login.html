@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="{% url 'main:login' %}?next={{request.path}}" method="POST">
+  {% csrf_token %}
+  {{ login_form }}
+  {% if error_message %}
+  <span>{{error_message}}</span>
+  {% endif %}
+  <input type="submit" value="Login">
+</form>
+{% endblock %}
