@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="{% url 'weight:index' %}" method="POST">
+  {% csrf_token %}
+  {{ weight_observation_form }}
+  <input type="hidden" name="form_name" value="weight_observation_form">
+  <input type="submit" value="Submit">
+</form>
+{{ data.to_html | safe }}
+<form action="{% url 'weight:index' %}" method="POST">
+  {% csrf_token %}
+  {{ weight_target_form }}
+  <input type="hidden" name="form_name" value="weight_target_form">
+  <input type="submit" value="Submit">
+</form>
+{{ data2.to_html | safe }}
+{% endblock %}

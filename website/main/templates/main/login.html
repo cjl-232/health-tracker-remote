@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form action="{% url 'main:login' %}?next={{request.path}}" method="POST">
+
+<form action="{% url 'main:login' %}" method="POST">
   {% csrf_token %}
   {{ login_form }}
+  {% if request.GET.next is not None %}
+  <input type="hidden" name="next" value="{{ request.GET.next }}">
+  {% endif %}
   {% if error_message %}
   <span>{{error_message}}</span>
   {% endif %}

@@ -7,16 +7,18 @@
   <body>
     <nav class="main-navbar">
       <ul>
-        <li><a href="#">Home</a></li>
+        <li><a href="{% url 'main:index' %}">Home</a></li>
         <li><a href="{% url 'main:about' %}">About</a></li>
         {% if user.is_authenticated %}
+        <li><a href="{% url 'weight:index' %}">Weight</a></li>
         <li>User: {{ user.get_username }}</li>
-        <form action="{% url 'logout' %}?next={{request.path}}" method="POST">
+        <form action="{% url 'logout' %}?next={% url 'main:index' %}" method="POST">
           {% csrf_token %}
           <input type="submit" class="navbar-auth-button" value="Logout">
         </form>
         {% else %}
-        <form action="{% url 'main:login' %}?next={{request.path}}">
+        <form action="{% url 'main:login' %}" method="GET">
+          <input type="hidden" name="next" value="{{request.path}}">
           <input type="submit" class="navbar-auth-button" value="Login">
         </form>
         {% endif %}

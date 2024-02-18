@@ -21,4 +21,5 @@ urlpatterns = [
     path('', include('main.urls', namespace = 'main')),
     path('', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
+    path('weight/', include('weight.urls', namespace = 'weight')),
 ]
