@@ -55,9 +55,15 @@ def index_view(request):
             'value',
         )
     )
+    
+    pd.options.plotting.backend = 'plotly'
+    fig = weight_history.plot(2, 1)
+    
+    
     context = {
         'data': weight_history,
         'data2': weight_targets,
+        'plot': fig.to_html(full_html = False, include_plotlyjs = 'cdn'),
         'weight_observation_form': weight_observation_form,
         'weight_observation_form_error': weight_observation_form_error,
         'weight_target_form': weight_target_form,
