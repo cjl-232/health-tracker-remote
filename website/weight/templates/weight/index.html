@@ -1,19 +1,49 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+{# Weight Observations: #}
 <form action="{% url 'weight:index' %}" method="POST">
   {% csrf_token %}
   {{ weight_observation_form }}
-  <input type="hidden" name="form_name" value="weight_observation_form">
+  <input type="hidden" name="form_name" value="add_weight_observation_form">
   <input type="submit" value="Submit">
 </form>
 {{ data.to_html | safe }}
+{% if deletion_dropdown_lists.observations is not None %}
+<form action="{% url 'weight:index' %}" method="POST">
+  {% csrf_token %}
+  <label for="choice">Delete recent observations:</label>
+  <select name="observation_choice" id="choice">
+    {% for choice in deletion_dropdown_lists.observations %}
+    <option value="{{choice.id}}">{{choice.label}}</option>
+    {% endfor %}
+  </select>
+  <input type="hidden" name="form_name" value="del_weight_observation_form">
+  <input type="submit" value="Delete" onclick="return confirm('Are you sure you wish to delete this observation?')">
+</form>
+{% endif %}
+
+{# Weight Targets: #}
 <form action="{% url 'weight:index' %}" method="POST">
   {% csrf_token %}
   {{ weight_target_form }}
-  <input type="hidden" name="form_name" value="weight_target_form">
+  <input type="hidden" name="form_name" value="add_weight_target_form">
   <input type="submit" value="Submit">
 </form>
 {{ data2.to_html | safe }}
+{% if deletion_dropdown_lists.targets is not None %}
+<form action="{% url 'weight:index' %}" method="POST">
+  {% csrf_token %}
+  <label for="choice">Delete targets:</label>
+  <select name="target_choice" id="choice">
+    {% for choice in deletion_dropdown_lists.targets %}
+    <option value="{{choice.id}}">{{choice.label}}</option>
+    {% endfor %}
+  </select>
+  <input type="hidden" name="form_name" value="del_weight_target_form">
+  <input type="submit" value="Delete" onclick="return confirm('Are you sure you wish to delete this target?')">
+</form>
+{% endif %}
 {{ plot | safe }}
 {% endblock %}

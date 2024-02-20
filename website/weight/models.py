@@ -10,8 +10,8 @@ class WeightObservation(models.Model):
         on_delete = models.CASCADE,
     )
     weight = models.DecimalField(
-        max_digits = 5,
-        decimal_places = 2,
+        max_digits = 4,
+        decimal_places = 1,
         db_comment = 'Weight in kilograms at the time of entry',
         validators = [
             MinValueValidator(Decimal('0.01')),
@@ -37,8 +37,8 @@ class WeightTarget(models.Model):
         blank = False,
     )
     value = models.DecimalField(
-        max_digits = 5,
-        decimal_places = 2,
+        max_digits = 4,
+        decimal_places = 1,
         db_comment = 'Target weight in kilograms',
         validators = [
             MinValueValidator(Decimal('0.01')),
