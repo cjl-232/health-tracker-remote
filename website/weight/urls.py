@@ -5,4 +5,5 @@ app_name = 'weight'
 
 urlpatterns = [
     path('', views.index_view, name = 'index'),
+    path('setup/', views.setup_view, name = 'setup'),
 ]

@@ -2,14 +2,19 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 import pandas as pd
 
-from .forms import WeightObservationForm, WeightTargetForm
-from .models import WeightObservation, WeightTarget
+from .forms import UserInfoForm, WeightObservationForm, WeightTargetForm
+from .models import UserInfo, WeightObservation, WeightTarget
 
 #Add an extra form for removing observations! Very important
 #This should probably be another page...
 
+#LAST THING NEEDED IS A STARTING POINT AND A BMI CALCULATOR, MAYBE ALSO HEIGHT
+
 @login_required
 def index_view(request):
+
+    if not UserInfo.objects.filter(user_id = request.user.id).exists():
+        return redirect('weight:setup')
 
     weight_observation_form = WeightObservationForm()
     weight_observation_form_error = None
@@ -113,3 +118,33 @@ def index_view(request):
         'weight_target_form_error': weight_target_form_error,
     }
     return render(request, 'weight/index.html', context = context)
+
+@login_required
+def setup_view(request):
+    #Redirect users with details already in place or successfully added:
+    if UserInfo.objects.filter(user_id = request.user.id).exists():
+        return redirect('weight:index')
+        
+    #Otherwise prepare a context dictionary:
+    context = {}
+        
+    #If this is a POST request retrieve the form, otherwise create a new one:
+    if request.method == 'POST':
+        form = UserInfoForm(request.POST)
+        context['user_info_form'] = form
+        if form.is_valid():
+            obj = form.save(commit = False)
+            obj.user_id = request.user.id
+            obj.save()
+            WeightObservation.objects.create(
+                user_id = obj.user_id,
+                weight = obj.baseline_weight,
+            )
+            return redirect('weight:index')
+        else:
+            context['error_message'] = 'Invalid values supplied.'
+    else:
+        context['user_info_form'] = UserInfoForm()
+    
+    #Render the page with the provided context:
+    return render(request, 'weight/setup.html', context = context)

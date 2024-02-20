@@ -1,5 +1,11 @@
 from django import forms
-from .models import WeightObservation, WeightTarget
+from .models import UserInfo, WeightObservation, WeightTarget
+
+class UserInfoForm(forms.ModelForm):
+
+    class Meta:
+        model = UserInfo
+        fields = ['baseline_weight']
 
 class WeightObservationForm(forms.ModelForm):
     
