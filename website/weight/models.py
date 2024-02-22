@@ -1,3 +1,4 @@
+from colorfield.fields import ColorField
 from decimal import Decimal
 from django.conf import settings
 from django.core.validators import MinValueValidator
@@ -73,6 +74,7 @@ class WeightTarget(models.Model):
         ],
         verbose_name = 'Weight (kg)',
     )
+    colour = ColorField(default='#000000')
     
     class Meta:
         db_table = 'weight_targets'
@@ -81,7 +83,12 @@ class WeightTarget(models.Model):
                 fields = ['user', 'name'],
                 name = 'unique_name_constraint',
             ),
+            models.UniqueConstraint(
+                fields = ['user', 'value'],
+                name = 'unique_value_constraint',
+            ),
         ]
         indexes = [
             models.Index(fields = ['user']),
         ]
+        verbose_name = 'Weight Target'

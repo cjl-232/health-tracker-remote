@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 import pandas as pd
+import plotly.graph_objects as go
 
 from .forms import UserInfoForm, WeightObservationForm, WeightTargetForm
 from .models import UserInfo, WeightObservation, WeightTarget
@@ -13,6 +14,7 @@ from .models import UserInfo, WeightObservation, WeightTarget
 @login_required
 def index_view(request):
 
+    #Redirect users not yet registered with this app:
     if not UserInfo.objects.filter(user_id = request.user.id).exists():
         return redirect('weight:setup')
 
@@ -60,6 +62,7 @@ def index_view(request):
         ),
         columns = ['id', 'email', 'weight', 'datetime'],
     )
+    
     weight_targets = pd.DataFrame.from_records(
         WeightTarget.objects.filter(
             user_id = request.user.id,
@@ -68,9 +71,24 @@ def index_view(request):
             'user_id__email',
             'name',
             'value',
+            'colour',
         ),
-        columns = ['id', 'email', 'name', 'value'],
+        columns = ['id', 'email', 'name', 'value', 'colour'],
     )
+    
+    observations = WeightObservation.objects.filter(
+            user_id = request.user.id,
+        ).order_by(
+            'datetime',
+        ).values_list(
+            'id',
+            'user_id__email',
+            'weight',
+            'datetime',
+        )
+    targets = WeightTarget.objects.filter(
+            user_id = request.user.id,
+        )
     
     #Retrieve lists of dictionaries to use in deletion dropdowns:
     recent_observations = None
@@ -102,6 +120,34 @@ def index_view(request):
     
     pd.options.plotting.backend = 'plotly'
     fig = weight_history.plot('datetime', 'weight')
+    
+    fig = go.Figure()
+    for target in targets:
+        fig.add_hline(
+            y = target.value,
+            name = target.name,
+            line_color = target.colour,
+            line_dash = 'dash',
+            showlegend = True,
+        )
+    df = pd.DataFrame(observations.values_list('datetime', 'weight'))
+    fig.add_trace(
+        go.Scatter(
+            x = df[0],
+            y = df[1],
+            mode = 'lines+markers',
+            name = 'Weight History',
+            showlegend = True,
+            legendrank = 999,
+        )
+    )
+    weight_values = list(observations.values_list('weight', flat = True))
+    target_values = list(targets.values_list('value', flat = True))
+    fig.update_yaxes(
+        range = [0, float(max(weight_values + target_values)) * 1.1],
+        fixedrange = True,
+    )
+    
     
     
     context = {

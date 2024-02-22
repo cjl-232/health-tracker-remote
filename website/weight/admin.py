@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import WeightTarget
 
-# Register your models here.
+@admin.register(WeightTarget)
+class WeightTargetAdmin(admin.ModelAdmin):
+    pass

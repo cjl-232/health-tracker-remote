@@ -1,3 +1,4 @@
+from colorfield.widgets import ColorWidget
 from django import forms
 from .models import UserInfo, WeightObservation, WeightTarget
 
@@ -17,4 +18,7 @@ class WeightTargetForm(forms.ModelForm):
     
     class Meta:
         model = WeightTarget
-        fields = ['name', 'value']
+        fields = ['name', 'value', 'colour']
+        widgets = {
+            'colour': ColorWidget(),
+        }
