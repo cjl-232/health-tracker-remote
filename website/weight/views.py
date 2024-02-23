@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -76,20 +77,31 @@ def index_view(request):
         columns = ['id', 'email', 'name', 'value', 'colour'],
     )
     
+    #Set up user-specific querysets:
+    user_info = UserInfo.objects.get(
+        user_id = request.user.id
+    )
     observations = WeightObservation.objects.filter(
-            user_id = request.user.id,
-        ).order_by(
-            'datetime',
-        ).values_list(
-            'id',
-            'user_id__email',
-            'weight',
-            'datetime',
-        )
+        user_id = request.user.id,
+    ).order_by(
+        'datetime',
+    )
     targets = WeightTarget.objects.filter(
-            user_id = request.user.id,
-        )
+        user_id = request.user.id,
+    )
     
+    #Determine progress values, formatted as percentages, from these:
+    progress_values = {}
+    for target in targets:
+        if target.value != user_info.baseline_weight:
+            change = user_info.baseline_weight - observations.last().weight
+            target_change = user_info.baseline_weight - target.value
+            progress = target_change / change
+        else:
+            progress = 1.0
+        progress_values[target.name] = '{:.1%}'.format(np.clip(progress, 0, 1))
+
+            
     #Retrieve lists of dictionaries to use in deletion dropdowns:
     recent_observations = None
     if not weight_history.empty:
