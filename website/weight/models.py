@@ -38,7 +38,7 @@ class WeightObservation(models.Model):
         to = settings.AUTH_USER_MODEL,
         on_delete = models.CASCADE,
     )
-    weight = models.DecimalField(
+    value = models.DecimalField(
         max_digits = 4,
         decimal_places = 1,
         db_comment = 'Weight in kilograms at the time of entry',
@@ -48,6 +48,12 @@ class WeightObservation(models.Model):
         verbose_name = 'Weight (kg)',
     )
     datetime = models.DateTimeField(auto_now_add = True)
+    
+    def __str__(self):
+        return ' - '.join([
+            self.datetime.strftime('%Y-%m-%d'),
+            '{:.1f}'.format(self.value) + 'kg'
+        ])
     
     class Meta:
         db_table = 'weight_observations'
@@ -75,6 +81,9 @@ class WeightTarget(models.Model):
         verbose_name = 'Weight (kg)',
     )
     colour = ColorField(default='#000000')
+    
+    def __str__(self):
+        return self.name + ' - ' + '{:.1f}'.format(self.value) + 'kg'
     
     class Meta:
         db_table = 'weight_targets'

@@ -1,25 +1,23 @@
 {% extends "base.html" %}
-
+{% block title %}Weight{% endblock %}
 {% block content %}
-
 {# Weight Observations: #}
 <form action="{% url 'weight:index' %}" method="POST">
   {% csrf_token %}
-  {{ weight_observation_form }}
-  <input type="hidden" name="form_name" value="add_weight_observation_form">
+  {{ observation_form }}
+  <input type="hidden" name="form_name" value="add_observation">
   <input type="submit" value="Submit">
 </form>
-{{ data.to_html | safe }}
-{% if deletion_dropdown_lists.observations is not None %}
+{% if recent_observation_details is not None %}
 <form action="{% url 'weight:index' %}" method="POST">
   {% csrf_token %}
   <label for="choice">Delete recent observations:</label>
-  <select name="observation_choice" id="choice">
-    {% for choice in deletion_dropdown_lists.observations %}
-    <option value="{{choice.id}}">{{choice.label}}</option>
+  <select name="choice" id="choice">
+    {% for observation in recent_observation_details %}
+    <option value="{{observation.id}}">{{observation.label}}</option>
     {% endfor %}
   </select>
-  <input type="hidden" name="form_name" value="del_weight_observation_form">
+  <input type="hidden" name="form_name" value="delete_observation">
   <input type="submit" value="Delete" onclick="return confirm('Are you sure you wish to delete this observation?')">
 </form>
 {% endif %}
@@ -27,21 +25,20 @@
 {# Weight Targets: #}
 <form action="{% url 'weight:index' %}" method="POST">
   {% csrf_token %}
-  {{ weight_target_form }}
-  <input type="hidden" name="form_name" value="add_weight_target_form">
+  {{ target_form }}
+  <input type="hidden" name="form_name" value="add_target">
   <input type="submit" value="Submit">
 </form>
-{{ data2.to_html | safe }}
-{% if deletion_dropdown_lists.targets is not None %}
+{% if target_details is not None %}
 <form action="{% url 'weight:index' %}" method="POST">
   {% csrf_token %}
   <label for="choice">Delete targets:</label>
-  <select name="target_choice" id="choice">
-    {% for choice in deletion_dropdown_lists.targets %}
-    <option value="{{choice.id}}">{{choice.label}}</option>
+  <select name="choice" id="choice">
+    {% for target in target_details %}
+    <option value="{{target.id}}">{{target.label}}</option>
     {% endfor %}
   </select>
-  <input type="hidden" name="form_name" value="del_weight_target_form">
+  <input type="hidden" name="form_name" value="delete_target">
   <input type="submit" value="Delete" onclick="return confirm('Are you sure you wish to delete this target?')">
 </form>
 {% endif %}

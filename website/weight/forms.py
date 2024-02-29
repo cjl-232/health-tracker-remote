@@ -12,7 +12,7 @@ class WeightObservationForm(forms.ModelForm):
     
     class Meta:
         model = WeightObservation
-        fields = ['weight']
+        fields = ['value']
         
 class WeightTargetForm(forms.ModelForm):
     

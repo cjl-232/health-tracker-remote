@@ -1,0 +1,15 @@
+.main-navbar {
+}
+
+.main-navbar ul {
+	list-style: none;
+	display: flex;
+}
+
+.main-navbar li {
+}
+
+.main-navbar a, form, span {
+	display: block;
+	padding: 10px;
+}
