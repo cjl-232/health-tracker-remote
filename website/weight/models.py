@@ -55,6 +55,9 @@ class WeightObservation(models.Model):
             '{:.1f}'.format(self.value) + 'kg'
         ])
     
+    def make_label(self):
+        return self.__str__()
+    
     class Meta:
         db_table = 'weight_observations'
         indexes = [

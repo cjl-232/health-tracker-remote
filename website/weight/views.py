@@ -57,7 +57,7 @@ def index_view(request):
 
     #Set up user-specific querysets:
     user_info = UserInfo.objects.get(
-        user_id = request.user.id
+        user_id = request.user.id,
     )
     observations = WeightObservation.objects.filter(
         user_id = request.user.id,
@@ -70,37 +70,37 @@ def index_view(request):
         '-value',
     )
     
-    #Produce observation-related text to pass as context:
-    context['recent_observation_details'] = []
-    for observation in observations[:10]:
-        context['recent_observation_details'].append({
-            'id': observation.id,
-            'label': str(observation),
-        })
+    #Pass recent observations as context:
+    context['recent_observations'] = observations[:10]
+    
+    print(observations)
+    print(context['recent_observations'])
     
     #Produce target-related text to pass as context:
     if targets.exists:
         context['target_details'] = []
         def make_target_dict(target, baseline_weight, current_weight):
-            if target.value != baseline_weight:
-                actual_decrease = baseline_weight - current_weight
-                target_decrease = baseline_weight - target.value
+            if target.value < baseline_weight:
+                actual_decrease = max(0, baseline_weight - current_weight)
+                target_decrease = max(0, baseline_weight - target.value)
                 progress = np.clip(actual_decrease / target_decrease, 0.0, 1.0)
             else:
                 progress = 1.0
             return {
                 'id': target.id,
+                'name': target.name,
                 'label': str(target),
                 'progress': '{:.1%}'.format(progress),
             }
         for target in targets:
-            context['target_details'].append(
-                make_target_dict(
-                    target,
-                    user_info.baseline_weight,
-                    observations[1].value,
+            if user_info.baseline_weight > target.value:
+                context['target_details'].append(
+                    make_target_dict(
+                        target,
+                        user_info.baseline_weight,
+                        observations.first().value,
+                    )
                 )
-            )
     
     #Produce a plot to pass as context:
     time_series_df = pd.DataFrame(

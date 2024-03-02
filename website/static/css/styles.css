@@ -1,15 +1,64 @@
-.main-navbar {
-}
-
-.main-navbar ul {
-	list-style: none;
+section {
 	display: flex;
 }
 
-.main-navbar li {
+.main-navbar {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
 }
 
-.main-navbar a, form, span {
+.main-navbar * {
+	margin-top: 0px;
+}
+
+.main-navbar ul {
+	display: flex;
+	list-style: none;
+	padding: 0px;
+	width: 100%;
+	height: 100%;
+}
+
+.main-navbar li {
+	margin: 0px;
+}
+
+.main-navbar form, .navbar-auth-button {
+	width: 100%;
+	height: 100%;
+}
+
+.main-navbar .navbar-auth-button {
+	background: none;
+    border: none;
+    color: blue;
+	cursor: pointer;
+	font: inherit;
+	text-decoration: underline;
+}
+
+.main-navbar a, .main-navbar span, .main-navbar .navbar-auth-button {
+	color: black;
+	cursor: pointer;
+	font: inherit;
+	font-size: 18px;
 	display: block;
-	padding: 10px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	text-decoration-line: none;
+}
+
+.main-navbar .current-location {
+	font-weight: bold;
+}
+
+.main-navbar a:hover, .main-navbar span:hover, .main-navbar .navbar-auth-button:hover {
+	color: crimson;
+}
+
+.summary-box ul {
+	list-style: none;
 }

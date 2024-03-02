@@ -1,6 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Weight{% endblock %}
 {% block content %}
+<section>
+  {{ plot | safe }}
+  <div class="summary-box">
+    <h1>Overview</h1>
+    <ul>
+      {% if recent_observation_details is not None %}
+      <li>Latest observation: {{recent_observations.0.value}}</li>
+      {% endif %}
+      {% for target in target_details %}
+      <li>{{target.name}}: {{target.progress}}
+      {% endfor %}
+    </ul>
+  </div>
+</section>
 {# Weight Observations: #}
 <form action="{% url 'weight:index' %}" method="POST">
   {% csrf_token %}
@@ -8,13 +22,13 @@
   <input type="hidden" name="form_name" value="add_observation">
   <input type="submit" value="Submit">
 </form>
-{% if recent_observation_details is not None %}
+{% if recent_observations is not None %}
 <form action="{% url 'weight:index' %}" method="POST">
   {% csrf_token %}
   <label for="choice">Delete recent observations:</label>
   <select name="choice" id="choice">
-    {% for observation in recent_observation_details %}
-    <option value="{{observation.id}}">{{observation.label}}</option>
+    {% for observation in recent_observations %}
+    <option value="{{observation.id}}">{{observation.make_label}}</option>
     {% endfor %}
   </select>
   <input type="hidden" name="form_name" value="delete_observation">
@@ -42,5 +56,4 @@
   <input type="submit" value="Delete" onclick="return confirm('Are you sure you wish to delete this target?')">
 </form>
 {% endif %}
-{{ plot | safe }}
 {% endblock %}
