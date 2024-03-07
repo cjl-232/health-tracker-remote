@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils import timezone
 
 class UserInfo(models.Model):
     
@@ -18,6 +19,11 @@ class UserInfo(models.Model):
             MinValueValidator(Decimal('0.01')),
         ],
         verbose_name = 'Baseline Weight (kg)',
+    )
+    baseline_weight_datetime = models.DateTimeField(
+        default = timezone.now,
+        editable = False,
+        verbose_name = 'Baseline Weight Datetime',
     )
     
     class Meta:
@@ -55,7 +61,7 @@ class WeightObservation(models.Model):
             '{:.1f}'.format(self.value) + 'kg'
         ])
     
-    def make_label(self):
+    def get_label(self):
         return self.__str__()
     
     class Meta:
@@ -87,6 +93,20 @@ class WeightTarget(models.Model):
     
     def __str__(self):
         return self.name + ' - ' + '{:.1f}'.format(self.value) + 'kg'
+        
+    def get_label(self):
+        return self.__str__()
+        
+    def calculate_progress(self, baseline_weight, current_weight):
+        format_string = '{:.1%}'
+        if self.value < current_weight < baseline_weight:
+            current_progress = baseline_weight - current_weight
+            desired_progress = baseline_weight - self.value
+            return format_string.format(current_progress / desired_progress)
+        elif self.value >= current_weight:
+            return format_string.format(1.0)
+        else:
+            return format_string.format(0.0)
     
     class Meta:
         db_table = 'weight_targets'

@@ -10,6 +10,10 @@ class UserInfoForm(forms.ModelForm):
 
 class WeightObservationForm(forms.ModelForm):
     
+    update_baseline = forms.BooleanField(
+        label = 'Update Baseline',
+        required = False,
+    )
     class Meta:
         model = WeightObservation
         fields = ['value']

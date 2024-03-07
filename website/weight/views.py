@@ -19,6 +19,21 @@ def index_view(request):
     if not UserInfo.objects.filter(user_id = request.user.id).exists():
         return redirect('weight:setup')
         
+    #Set up user-specific querysets:
+    user_info = UserInfo.objects.get(
+        user_id = request.user.id,
+    )
+    observations = WeightObservation.objects.filter(
+        user_id = request.user.id,
+    ).order_by(
+        '-datetime',
+    )
+    targets = WeightTarget.objects.filter(
+        user_id = request.user.id,
+    ).order_by(
+        '-value',
+    )
+        
     #Prepare a context dictionary:
     context = {
         'observation_form': WeightObservationForm(),
@@ -34,6 +49,11 @@ def index_view(request):
                     obj = form.save(commit = False)
                     obj.user_id = request.user.id
                     obj.save()
+                    if request.POST.get('update_baseline'):
+                        user_info.baseline_weight = obj.value
+                        user_info.baseline_weight_datetime = obj.datetime
+                        user_info.save()
+                    return redirect('weight:index')
                 else:
                     context['observation_form'] = form
             case 'add_target':
@@ -42,6 +62,7 @@ def index_view(request):
                     obj = form.save(commit = False)
                     obj.user_id = request.user.id
                     obj.save()
+                    return redirect('weight:index')
                 else:
                     context['target_form'] = form
             case 'delete_observation':
@@ -49,58 +70,31 @@ def index_view(request):
                 object = WeightObservation.objects.get(pk = id)
                 if object.user_id == request.user.id:
                     object.delete()
+                    return redirect('weight:index')
             case 'delete_target':
                 id = int(request.POST.get('choice'))
                 object = WeightTarget.objects.get(pk = id)
                 if object.user_id == request.user.id:
                     object.delete()
-
-    #Set up user-specific querysets:
-    user_info = UserInfo.objects.get(
-        user_id = request.user.id,
-    )
-    observations = WeightObservation.objects.filter(
-        user_id = request.user.id,
-    ).order_by(
-        '-datetime',
-    )
-    targets = WeightTarget.objects.filter(
-        user_id = request.user.id,
-    ).order_by(
-        '-value',
-    )
+                    return redirect('weight:index')
     
-    #Pass recent observations as context:
-    context['recent_observations'] = observations[:10]
-    
-    print(observations)
-    print(context['recent_observations'])
-    
-    #Produce target-related text to pass as context:
+    #Retrieve values from these queries to pass as context:
+    context['baseline_weight'] = '{:.1f}'.format(user_info.baseline_weight)
+    if observations.exists:
+        context['recent_observations'] = observations[:10]
+        context['progress_to_date'] = '{:.1f}'.format(
+            user_info.baseline_weight - observations.first().value,
+        )
     if targets.exists:
-        context['target_details'] = []
-        def make_target_dict(target, baseline_weight, current_weight):
-            if target.value < baseline_weight:
-                actual_decrease = max(0, baseline_weight - current_weight)
-                target_decrease = max(0, baseline_weight - target.value)
-                progress = np.clip(actual_decrease / target_decrease, 0.0, 1.0)
-            else:
-                progress = 1.0
-            return {
-                'id': target.id,
-                'name': target.name,
-                'label': str(target),
-                'progress': '{:.1%}'.format(progress),
-            }
-        for target in targets:
-            if user_info.baseline_weight > target.value:
-                context['target_details'].append(
-                    make_target_dict(
-                        target,
-                        user_info.baseline_weight,
-                        observations.first().value,
-                    )
-                )
+        context['targets'] = [
+            {
+                'obj': target,
+                'progress': target.calculate_progress(
+                    baseline_weight = user_info.baseline_weight,
+                    current_weight = observations.first().value,
+                ),
+            } for target in targets
+        ]
     
     #Produce a plot to pass as context:
     time_series_df = pd.DataFrame(
@@ -125,16 +119,50 @@ def index_view(request):
             legendrank = 999,
         )
     )
+    fig.add_trace(
+        go.Scatter(
+            x = [user_info.baseline_weight_datetime],
+            y = [user_info.baseline_weight],
+            mode = 'markers',
+            name = 'Baseline Observation',
+            marker = go.scatter.Marker(
+                color = 'black',
+                size = 8,
+                symbol = 'x',
+            ),
+            showlegend = True,
+            legendrank = 1001,
+            hoverinfo = 'skip',
+        )
+    )
     weight_values = list(observations.values_list('value', flat = True))
     target_values = list(targets.values_list('value', flat = True))
+    fig.update_xaxes(
+        tickformat = '%d/%m',
+    )
     fig.update_yaxes(
         range = [0, float(max(weight_values + target_values)) * 1.1],
+    )
+    fig.update_layout(
+        legend = {
+            'orientation': 'h',
+            'xanchor': 'auto',
+            'yanchor': 'bottom',
+            'x': 0.5,
+            'y': 1.0,
+        },
+        margin = {
+            'l': 10,
+            'r': 10,
+        },
     )
     context['plot'] = fig.to_html(
         full_html = False,
         include_plotlyjs = 'cdn',
+        config = {
+            #'displayModeBar': False,
+        },
     )
-    
     return render(request, 'weight/index.html', context = context)
 
 @login_required

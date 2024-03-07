@@ -1,5 +1,12 @@
+body {
+	padding: 0;
+	margin: 0;
+}
+
 section {
 	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
 }
 
 .main-navbar {
@@ -14,6 +21,7 @@ section {
 
 .main-navbar ul {
 	display: flex;
+	flex-wrap: wrap;
 	list-style: none;
 	padding: 0px;
 	width: 100%;
@@ -59,6 +67,37 @@ section {
 	color: crimson;
 }
 
-.summary-box ul {
+.plot-box {
+	width: calc(100% - 300px);
+	min-height: 450px;
+	min-width: 300px;
+}
+
+.plot-box > div, .plot-box div .js-plotly-plot, .plot-box div .plot-container{
+	width: 100%;
+	height: 100%;
+}
+
+.controls-box {
+	min-width: 300px;
+}
+
+.controls-box ul {
 	list-style: none;
+}
+
+.controls-box .summary-table .numeric-cell {
+	text-align: right;
+}
+
+.single-value-form th, .multi-value-form th {
+	min-width: 120px;
+}
+
+.single-value-form label, .multi-value-form label {
+	font-weight: normal;
+}
+
+.form-submit-button {
+	margin-left: 5px;
 }
