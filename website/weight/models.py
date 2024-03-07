@@ -1,7 +1,6 @@
-from colorfield.fields import ColorField
 from decimal import Decimal
 from django.conf import settings
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 from django.utils import timezone
 
@@ -53,7 +52,11 @@ class WeightObservation(models.Model):
         ],
         verbose_name = 'Weight (kg)',
     )
-    datetime = models.DateTimeField(auto_now_add = True)
+    datetime = models.DateTimeField(
+        default = timezone.now,
+        editable = False,
+        verbose_name = 'Observation Datetime',
+    )
     
     def __str__(self):
         return ' - '.join([
@@ -89,7 +92,17 @@ class WeightTarget(models.Model):
         ],
         verbose_name = 'Weight (kg)',
     )
-    colour = ColorField(default='#000000')
+    colour = models.CharField(
+        max_length = 256,
+        blank = False,
+        default='#000000',
+        validators = [
+            RegexValidator(
+                regex = '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+                message = 'Enter a valid hex code.',
+            ),
+        ],
+    )
     
     def __str__(self):
         return self.name + ' - ' + '{:.1f}'.format(self.value) + 'kg'

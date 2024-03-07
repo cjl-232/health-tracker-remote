@@ -1,5 +1,5 @@
-from colorfield.widgets import ColorWidget
 from django import forms
+from django.forms.widgets import TextInput
 from .models import UserInfo, WeightObservation, WeightTarget
 
 class UserInfoForm(forms.ModelForm):
@@ -24,5 +24,5 @@ class WeightTargetForm(forms.ModelForm):
         model = WeightTarget
         fields = ['name', 'value', 'colour']
         widgets = {
-            'colour': ColorWidget(),
+            'colour': TextInput(attrs={'type': 'color'}),
         }

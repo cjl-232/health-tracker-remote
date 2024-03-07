@@ -139,9 +139,15 @@ def index_view(request):
     target_values = list(targets.values_list('value', flat = True))
     fig.update_xaxes(
         tickformat = '%d/%m',
+        gridcolor = 'lightgrey',
+        showline = True,
+        linecolor = 'black',
     )
     fig.update_yaxes(
         range = [0, float(max(weight_values + target_values)) * 1.1],
+        gridcolor = 'lightgrey',
+        showline = True,
+        linecolor = 'black',
     )
     fig.update_layout(
         legend = {
@@ -155,6 +161,7 @@ def index_view(request):
             'l': 10,
             'r': 10,
         },
+        plot_bgcolor = 'white',
     )
     context['plot'] = fig.to_html(
         full_html = False,
@@ -184,7 +191,8 @@ def setup_view(request):
             obj.save()
             WeightObservation.objects.create(
                 user_id = obj.user_id,
-                weight = obj.baseline_weight,
+                value = obj.baseline_weight,
+                datetime = obj.baseline_weight_datetime,
             )
             return redirect('weight:index')
         else:
