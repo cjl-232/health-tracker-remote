@@ -70,13 +70,17 @@ def index_view(request):
                 object = WeightObservation.objects.get(pk = id)
                 if object.user_id == request.user.id:
                     object.delete()
-                    return redirect('weight:index')
+                else:
+                    pass #Indicates bad action
+                return redirect('weight:index')
             case 'delete_target':
                 id = int(request.POST.get('choice'))
                 object = WeightTarget.objects.get(pk = id)
                 if object.user_id == request.user.id:
                     object.delete()
-                    return redirect('weight:index')
+                else:
+                    pass #Indicates bad action
+                return redirect('weight:index')
     
     #Retrieve values from these queries to pass as context:
     context['baseline_weight'] = '{:.1f}'.format(user_info.baseline_weight)

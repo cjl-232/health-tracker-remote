@@ -68,42 +68,57 @@
           <input type="hidden" name="form_name" value="add_target">
           <input type="submit" value="Submit" class="form-submit-button" onclick="return confirm('Are you sure you wish to add this target?')">
         </form>
+        <br>
+        {% if recent_observations %}
+        <form action="{% url 'weight:index' %}" method="POST">
+          {% csrf_token %}
+          <table class="single-value-form">
+            <tr>
+              <th colspan="2">Delete Observation</th>
+            </tr>
+            <tr>
+              <td>
+                <select name="choice">
+                  {% for observation in recent_observations %}
+                  <option value="{{ observation.id }}">{{ observation.get_label }}</option>
+                  {% endfor %}
+                </select>
+              </td> 
+              <td>
+                <input type="submit" value="Delete" class="form-submit-button" onclick="return confirm('Are you sure you wish to delete this observation?')">
+              </td> 
+            </tr>
+          </table>
+          <input type="hidden" name="form_name" value="delete_observation">
+        </form>
+        <br>
+        {% endif %}
+        {% if targets %}
+        <form action="{% url 'weight:index' %}" method="POST">
+          {% csrf_token %}
+          <table class="single-value-form">
+            <tr>
+              <th colspan="2">Delete Target</th>
+            </tr>
+            <tr>
+              <td>
+                <select name="choice">
+                  {% for target in targets %}
+                  <option value="{{ target.obj.id }}">{{ target.obj.get_label }}</option>
+                  {% endfor %}
+                </select>
+              </td> 
+              <td>
+                <input type="submit" value="Delete" class="form-submit-button" onclick="return confirm('Are you sure you wish to delete this observation?')">
+              </td> 
+            </tr>
+          </table>
+          <input type="hidden" name="form_name" value="delete_target">
+        </form>
+        <br>
+        {% endif %}
       </li>
     </ul>
   </div>
 </section>
-{# Weight Observations: #}
-<form action="{% url 'weight:index' %}" method="POST">
-  {% csrf_token %}
-  {{ observation_form.as_table }}
-  <input type="hidden" name="form_name" value="add_observation">
-  <input type="submit" value="Submit">
-</form>
-{% if recent_observations is not None %}
-<form action="{% url 'weight:index' %}" method="POST">
-  {% csrf_token %}
-  <label for="choice">Delete recent observations:</label>
-  <select name="choice" id="choice">
-    {% for observation in recent_observations %}
-    <option value="{{observation.id}}">{{observation.get_label}}</option>
-    {% endfor %}
-  </select>
-  <input type="hidden" name="form_name" value="delete_observation">
-  <input type="submit" value="Delete" onclick="return confirm('Are you sure you wish to delete this observation?')">
-</form>
-{% endif %}
-
-{% if targets is not None %}
-<form action="{% url 'weight:index' %}" method="POST">
-  {% csrf_token %}
-  <label for="choice">Delete targets:</label>
-  <select name="choice" id="choice">
-    {% for target in targets %}
-    <option value="{{target.id}}">{{target.label}}</option>
-    {% endfor %}
-  </select>
-  <input type="hidden" name="form_name" value="delete_target">
-  <input type="submit" value="Delete" onclick="return confirm('Are you sure you wish to delete this target?')">
-</form>
-{% endif %}
 {% endblock %}
