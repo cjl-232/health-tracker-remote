@@ -1,29 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    {% load static %}
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Page Title{% endblock %} </title>
+    <link rel="icon" type="image/x-icon" href={% block favicon_href %}"{% static 'favicon.ico' %}"{% endblock %}>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
   </head>
   <body>
     <nav class="main-navbar">
       <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="{% url 'main:about' %}">About</a></li>
+        {% url 'main:index' as index %}
+        {% url 'main:about' as about %}
+        <li><a href="{{ index }}"{% if request.get_full_path == index %}class="current-location"{% endif %}>Home</a></li>
+        <li><a href="{{ about }}"{% if request.get_full_path == about %}class="current-location"{% endif %}>About</a></li>
         {% if user.is_authenticated %}
-        <li>User: {{ user.get_username }}</li>
-        <form action="{% url 'logout' %}?next={{request.path}}" method="POST">
-          {% csrf_token %}
-          <input type="submit" class="navbar-auth-button" value="Logout">
-        </form>
+        {% url 'weight:index' as weight %}
+        <li><a href="{{ weight }}"{% if request.get_full_path == weight %} class="current-location"{% endif %}>Weight</a></li>
+        <li><span>User: {{ user.get_username }}</span></li>
+        <li>
+          <form action="{% url 'logout' %}?next={% url 'main:index' %}" method="POST">
+            {% csrf_token %}
+            <input type="submit" class="navbar-auth-button" value="Logout">
+          </form>
+        </li>
         {% else %}
-        <form action="{% url 'main:login' %}?next={{request.path}}">
-          <input type="submit" class="navbar-auth-button" value="Login">
-        </form>
+        <li>
+          <form action="{% url 'main:login' %}" method="GET">
+            <input type="hidden" name="next" value="{{request.path}}">
+            <input type="submit" class="navbar-auth-button" value="Login">
+          </form>
+        </li>
         {% endif %}
       </ul>
     </nav>
     <div>
       {% block content %}{% endblock %}
     </div>
+  {% block scripts %}{% endblock %}
+  <a href="www.google.com">www.google.com</a>
   </body>
 </html>

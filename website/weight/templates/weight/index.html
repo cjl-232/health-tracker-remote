@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Weight{% endblock %}
+{% block content %}
+<section>
+  <div class="plot-box">
+    {{ plot | safe }}
+  </div>
+  <div class="controls-box">
+    <h1>Overview</h1>
+    <ul>
+      <li>
+        <table class="summary-table">
+        <tr>
+          <th colspan="2">Stats</th>
+        </tr>
+        <tr>
+          <td>Baseline Weight:</td>
+          <td class="numeric-cell">{{baseline_weight}}kg</td>
+        </tr>
+        {% if recent_observations is not None %}
+        <tr>
+          <td>Latest Observation:</td>
+          <td class="numeric-cell">{{recent_observations.0.value}}kg</td>
+        </tr>
+        <tr>
+          <td>Overall Progress:</td>
+          <td class="numeric-cell">{{progress_to_date}}kg</td>
+        </tr>
+        <tr>
+          <td colspan="2">&nbsp;</td>
+        </tr>
+        {% endif %}
+        {% if targets %}
+          <tr>
+            <th colspan="2">Target Progress</th>
+          </tr>
+          {% for target in targets %}
+          <tr>
+            <td>{{target.obj.name}}:</td>
+            <td class="numeric-cell">{{target.progress}}</td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td colspan="2">&nbsp;</td>
+          </tr>
+        {% endif %}
+        </table>
+        <form action="{% url 'weight:index' %}" method="POST" class="multi-value-form">
+          {% csrf_token %}
+          <table class="multi-value-form">
+            <tr>
+              <th colspan="2">Append Observation</th>
+            <tr>
+            {{ observation_form.as_table }}
+          </table>
+          <input type="hidden" name="form_name" value="add_observation">
+          <input type="submit" value="Submit" class="form-submit-button" onclick="return confirm('Are you sure you wish to append this observation?')">
+        </form>
+        <br>
+        <form action="{% url 'weight:index' %}" method="POST">
+          {% csrf_token %}
+          <table class="multi-value-form">
+            <tr>
+              <th colspan="2">Define Target</th>
+            </tr>
+            {{ target_form.as_table }}
+          </table>
+          <input type="hidden" name="form_name" value="add_target">
+          <input type="submit" value="Submit" class="form-submit-button" onclick="return confirm('Are you sure you wish to add this target?')">
+        </form>
+        <br>
+        {% if recent_observations %}
+        <form action="{% url 'weight:index' %}" method="POST">
+          {% csrf_token %}
+          <table class="single-value-form">
+            <tr>
+              <th colspan="2">Delete Observation</th>
+            </tr>
+            <tr>
+              <td>
+                <select name="choice">
+                  {% for observation in recent_observations %}
+                  <option value="{{ observation.id }}">{{ observation.get_label }}</option>
+                  {% endfor %}
+                </select>
+              </td> 
+              <td>
+                <input type="submit" value="Delete" class="form-submit-button" onclick="return confirm('Are you sure you wish to delete this observation?')">
+              </td> 
+            </tr>
+          </table>
+          <input type="hidden" name="form_name" value="delete_observation">
+        </form>
+        <br>
+        {% endif %}
+        {% if targets %}
+        <form action="{% url 'weight:index' %}" method="POST">
+          {% csrf_token %}
+          <table class="single-value-form">
+            <tr>
+              <th colspan="2">Delete Target</th>
+            </tr>
+            <tr>
+              <td>
+                <select name="choice">
+                  {% for target in targets %}
+                  <option value="{{ target.obj.id }}">{{ target.obj.get_label }}</option>
+                  {% endfor %}
+                </select>
+              </td> 
+              <td>
+                <input type="submit" value="Delete" class="form-submit-button" onclick="return confirm('Are you sure you wish to delete this observation?')">
+              </td> 
+            </tr>
+          </table>
+          <input type="hidden" name="form_name" value="delete_target">
+        </form>
+        <br>
+        {% endif %}
+      </li>
+    </ul>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="{% url 'weight:setup' %}" method="POST">
+  {% csrf_token %}
+  {{ user_info_form }}
+  {% if error_message is not None %}
+  <span style="color:red">{{error_message}}</span>
+  {% endif %}
+  <input type="submit" onclick="return confirm('Are you sure these details are correct? You can change them later via the settings menu.');">
+</form>
+{% endblock %}
+
+<!--NEED TO WORK OUT HOW TO OVERRIDE LABELS ETC -->

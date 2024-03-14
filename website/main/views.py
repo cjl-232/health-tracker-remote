@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 from .forms import LoginForm
 
 def index_view(request):
@@ -18,7 +19,7 @@ def login_view(request):
             )
             if user is not None:
                 login(request, user)
-                return redirect('main:index')
+                return redirect(request.POST.get('next', 'main:index'))
             else:
                 error_message = 'Invalid username or password.'
                 context = {
