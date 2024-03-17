@@ -22,4 +22,5 @@ urlpatterns = [
     path('', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('weight/', include('weight.urls', namespace = 'weight')),
+    path('calorie_intake/', include('calorie_intake.urls', namespace = 'calorie_intake')),
 ]

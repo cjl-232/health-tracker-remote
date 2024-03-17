@@ -72,6 +72,7 @@ class WeightObservation(models.Model):
         indexes = [
             models.Index(fields = ['user', 'datetime']),
         ]
+        verbose_name = 'Weight Observation'
         
 class WeightTarget(models.Model):
 
@@ -126,11 +127,11 @@ class WeightTarget(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields = ['user', 'name'],
-                name = 'unique_name_constraint',
+                name = 'weight_target_unique_name_constraint',
             ),
             models.UniqueConstraint(
                 fields = ['user', 'value'],
-                name = 'unique_value_constraint',
+                name = 'weight_target_unique_value_constraint',
             ),
         ]
         indexes = [
