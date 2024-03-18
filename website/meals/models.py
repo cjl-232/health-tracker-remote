@@ -15,7 +15,7 @@ class ComponentDefinition(models.Model):
     )
     
     class Meta:
-        db_table = 'component_definitions'
+        db_table = 'meals_component_definitions'
         constraints = [
             models.UniqueConstraint(
                 fields = ['user', 'name'],
@@ -37,7 +37,7 @@ class ComponentGroup(models.Model):
         blank = False,
     )
     class Meta:
-        db_table = 'component_groups'
+        db_table = 'meals_component_groups'
         constraints = [
             models.UniqueConstraint(
                 fields = ['user', 'name'],
@@ -60,7 +60,7 @@ class Component(models.Model):
     )
         
     class Meta:
-        db_table = 'components'
+        db_table = 'meals_components'
         verbose_name = 'Meal Component'
 
 class Meal(models.Model):
@@ -80,5 +80,5 @@ class Meal(models.Model):
         )
         
     class Meta:
-        db_table = 'meals'
+        db_table = 'meals_meals'
         verbose_name = 'Meal'

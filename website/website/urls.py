@@ -21,6 +21,6 @@ urlpatterns = [
     path('', include('main.urls', namespace = 'main')),
     path('', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
+    path('meals/', include('meals.urls', namespace = 'meals')),
     path('weight/', include('weight.urls', namespace = 'weight')),
-    path('calorie_intake/', include('calorie_intake.urls', namespace = 'calorie_intake')),
 ]
