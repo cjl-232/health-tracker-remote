@@ -1,4 +1,6 @@
+from decimal import Decimal
 from django.conf import settings
+from django.core.validators import MinValueValidator
 from django.db import models
 
 class ComponentDefinition(models.Model):
@@ -12,7 +14,9 @@ class ComponentDefinition(models.Model):
     )
     groups = models.ManyToManyField(
         to = 'ComponentGroup',
+        blank = True,
     )
+    unit_calorie_count = models.PositiveIntegerField()
     
     class Meta:
         db_table = 'meals_component_definitions'
@@ -51,13 +55,27 @@ class ComponentGroup(models.Model):
 
 class Component(models.Model):
     definition = models.ForeignKey(
-        to = ComponentGroup,
+        to = ComponentDefinition,
         on_delete = models.CASCADE,
+    )
+    quantity = models.DecimalField(
+        max_digits = 6,
+        decimal_places = 2,
+        validators = [
+            MinValueValidator(Decimal('0.01')),
+        ],
     )
     meal = models.ForeignKey(
         to = 'Meal',
         on_delete = models.CASCADE,
+        related_name = 'components',
     )
+    
+    def __str__(self):
+        return self.definition.name + ' x' + '{:.0f}'.format(self.quantity)
+        
+    def get_calorie_count(self):
+        return self.definition.unit_calorie_count * self.quantity
         
     class Meta:
         db_table = 'meals_components'
@@ -74,10 +92,13 @@ class Meal(models.Model):
     )
     
     def __str__(self):
-        return ' - '.join(
-            self.user.username,
+        return ' - '.join([
+            self.user.email,
             self.datetime.strftime('%Y-%m-%d %H:%M:%S'),
-        )
+        ])
+        
+    def get_calorie_count(self):
+        return sum(obj.get_calorie_count() for obj in self.components.all())
         
     class Meta:
         db_table = 'meals_meals'
