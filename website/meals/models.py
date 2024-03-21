@@ -18,6 +18,9 @@ class ComponentDefinition(models.Model):
     )
     unit_calorie_count = models.PositiveIntegerField()
     
+    def __str__(self):
+        return self.name + ' (' + self.user.email + ')'
+    
     class Meta:
         db_table = 'meals_component_definitions'
         constraints = [
@@ -40,6 +43,10 @@ class ComponentGroup(models.Model):
         max_length = 256,
         blank = False,
     )
+    
+    def __str__(self):
+        return self.name + ' (' + self.user.email + ')'
+    
     class Meta:
         db_table = 'meals_component_groups'
         constraints = [
