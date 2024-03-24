@@ -15,6 +15,7 @@ class ComponentDefinition(models.Model):
     groups = models.ManyToManyField(
         to = 'ComponentGroup',
         blank = True,
+        related_name = 'definitions',
     )
     unit_calorie_count = models.PositiveIntegerField()
     

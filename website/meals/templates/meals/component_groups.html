@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Meal Component Groups{% endblock %}
+{% block content %}
+<input type="text" id="search_input" onkeyup="searchFunction()" placeholder="Search groups...">
+<table id="existing_groups_table" class="model-table">
+  {% for group in component_groups %}
+  {% if forloop.first %}
+  <tr>
+    <th>Name</th>
+    <th>Definition Count</th>
+  </tr>
+  {% endif %}
+  <tr name="{{ group.name }}">
+    <td class="model-table-name">{{ group.name }}</td>
+    <td class="model-table-value">{{ group.definitions.count }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<ul id="existing_groups_list" class="model-list">
+  {% for group in component_groups %}
+  <li name="{{group.name}}" class="model-list-object">
+    <p class="model-list-name">{{ group.name }} ({{ group.definitions.count }} definition{{ group.definitions.count|pluralize }})</p>
+    <form action="{% url 'meals:component_groups' %}" method="POST" class="model-list-form">
+      {% csrf_token %}
+      <input type="hidden" name="form_name" value="delete_group">
+      <input type="submit" value="Delete" class="model-list-delete-button">
+      <input type="hidden" name="group_id" value="{{group.id}}">
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+{{ definition_form }}
+{% endblock %}
+{% block scripts %}
+<script type="application/javascript">
+  function searchFunction() {
+    const input = document.getElementById('search_input').value.toUpperCase();
+    const table = document.getElementById('existing_groups_table');
+    for (let row of table.getElementsByTagName('tr')) {
+      if (row.getAttribute('name').toUpperCase().includes(input)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    }
+    const list = document.getElementById('existing_groups_list');
+    const list_objects = list.getElementsByTagName('li');
+    for (let object of list_objects) {
+      if (object.getAttribute('name').toUpperCase().includes(input)) {
+        object.style.display = '';
+      } else {
+        object.style.display = 'none';
+      }
+    }
+  }
+</script>
+{% endblock %}

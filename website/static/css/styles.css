@@ -112,3 +112,29 @@ section {
 .form-submit-button {
 	margin-left: 5px;
 }
+
+.model-list {
+	list-style: none;
+}
+
+.model-list-object {
+	display: flex;
+    align-items: center;
+}
+
+.model-list-name {
+	height: 100%;
+	width: 60%;
+	max-width: 240px;
+}
+
+.model-list-form {
+	height: 100%;
+	width: 40%;
+}
+
+.model-list-delete-button {
+	height: 100%;
+	width: 100%;
+	background-color: red;
+}
