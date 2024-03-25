@@ -1,21 +1,32 @@
 {% extends "base.html" %}
 {% block title %}Meal Component Groups{% endblock %}
 {% block content %}
-<input type="text" id="search_input" onkeyup="searchFunction()" placeholder="Search groups...">
-<table id="existing_groups_table" class="model-table">
-  {% for group in component_groups %}
-  {% if forloop.first %}
-  <tr>
-    <th>Name</th>
-    <th>Definition Count</th>
-  </tr>
-  {% endif %}
-  <tr name="{{ group.name }}">
-    <td class="model-table-name">{{ group.name }}</td>
-    <td class="model-table-value">{{ group.definitions.count }}</td>
-  </tr>
-  {% endfor %}
-</table>
+{% if not component_groups.empty %}
+<form action="{% url 'meals:component_groups' %}" method="POST" class="model-list-form">
+  {% csrf_token %}
+  <div class="controls">
+    <input type="text" id="search_input" class="filter-input" onkeyup="searchFunction()" placeholder="Search groups...">
+    <input type="submit" value="Delete selected groups" onclick="return requestDelete()" class="delete-button">
+  </div>
+  <table id="existing_groups_table" class="model-table">
+    {% for group in component_groups %}
+    {% if forloop.first %}
+    <tr>
+      <th class="model-table-name-header">Name</th>
+      <th class="model-table-value-header">Definition Count</th>
+      <th class="model-table-control-header"><input type="checkbox" onclick="toggleAll()"></th>
+    </tr>
+    {% endif %}
+    <tr name="{{ group.name }}">
+      <td class="model-table-name">{{ group.name }}</td>
+      <td class="model-table-value">{{ group.definitions.count }}</td>
+      <td class="model-table-control"><input type="checkbox" name="{{group.id}}" onclick="updateHeaderCheckbox()"></td>
+    </tr>
+    {% endfor %}
+  </table>
+</form>
+{% else %}
+{% endif %}
 <ul id="existing_groups_list" class="model-list">
   {% for group in component_groups %}
   <li name="{{group.name}}" class="model-list-object">
@@ -32,26 +43,75 @@
 {{ definition_form }}
 {% endblock %}
 {% block scripts %}
+{% if not component_groups.empty %}
 <script type="application/javascript">
-  function searchFunction() {
-    const input = document.getElementById('search_input').value.toUpperCase();
-    const table = document.getElementById('existing_groups_table');
-    for (let row of table.getElementsByTagName('tr')) {
-      if (row.getAttribute('name').toUpperCase().includes(input)) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
+  const input = document.getElementById('search_input');
+  const table = document.getElementById('existing_groups_table');
+  const table_rows = table.getElementsByTagName('tr');
+  const checkboxes = table.getElementsByTagName('input');
+  
+  function updateHeaderCheckbox() {
+    let checked_rows = 0, visible_rows = 0;
+    for (let i = 1; i < table_rows.length; i++) {
+      if (table_rows[i].style.display != 'none') {
+        visible_rows++;
+        if (checkboxes[i].checked) {
+          checked_rows++;
+        }
       }
     }
-    const list = document.getElementById('existing_groups_list');
-    const list_objects = list.getElementsByTagName('li');
-    for (let object of list_objects) {
-      if (object.getAttribute('name').toUpperCase().includes(input)) {
-        object.style.display = '';
-      } else {
-        object.style.display = 'none';
+    checkboxes[0].checked = visible_rows > 0 && checked_rows == visible_rows;
+    checkboxes[0].indeterminate = checked_rows > 0 && !checkboxes[0].checked;
+  }
+  function toggleAll() {
+    for (let i = 1; i < table_rows.length; i++) {
+      if (table_rows[i].style.display != 'none') {
+        checkboxes[i].checked = checkboxes[0].checked;
       }
+    }
+    updateHeaderCheckbox();
+  }
+  function searchFunction() {
+    const input_text = input.value.toUpperCase();
+    for (let i = 1; i < table_rows.length; i++) {
+      if (table_rows[i].getAttribute('name')) {
+        if (table_rows[i].getAttribute('name').toUpperCase().includes(input_text)) {
+          table_rows[i].style.display = '';
+        } else {
+          table_rows[i].style.display = 'none';
+          checkboxes[i].checked = false;
+        }
+      }
+    }
+    for (let row of table_rows) {
+      if (row.getAttribute('name')) {
+        if (row.getAttribute('name').toUpperCase().includes(input_text)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+          
+        }
+      }
+    }
+    updateHeaderCheckbox();
+  }
+  function requestDelete() {
+    let checked_rows = 0;
+    for (let i = 1; i < table_rows.length; i++) {
+      if (table_rows[i].style.display != 'none' && checkboxes[i].checked) {
+        checked_rows++;
+      }
+    }
+    console.log(checked_rows);
+    switch(checked_rows) {
+      case 0:
+        return false;
+      case 1:
+        return confirm('Are you sure you wish to delete this group?');
+      default:
+        return confirm(['Are you sure you wish to delete these', checked_rows, 'groups?'].join(' '));
     }
   }
 </script>
+{% endif %}
 {% endblock %}

@@ -1,6 +1,6 @@
 body {
 	padding: 0;
-	margin: 0;
+	margin: 2.5%;
 }
 
 section {
@@ -130,11 +130,76 @@ section {
 
 .model-list-form {
 	height: 100%;
-	width: 40%;
+	width: 100%;
+	max-width: 840px;
 }
 
-.model-list-delete-button {
-	height: 100%;
+.model-list-form .controls {
+	display: flex;
+	align-content: stretch;
 	width: 100%;
-	background-color: red;
+	max-width: 840px;
+}
+
+.filter-input, .delete-button {
+	margin: 5px;
+}
+
+.filter-input {
+	flex-grow: 1;
+}
+
+.model-table {
+	
+}
+
+.delete-button {
+	flex-shrink: 0;
+	flex-basis: auto;
+}
+
+.model-table {
+	border-collapse: collapse;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.model-table tr:nth-child(odd) {
+	background-color: #f2f2f2;
+}
+
+.model-table tr:nth-child(1) {
+	background-color: #04AA6D;
+}
+
+.model-table td {
+    word-break: break-word;
+}
+
+.model-table th {
+}
+
+.model-table th, .model-table td {
+	border-left: 0px;
+	border-right: 0px;
+	border-bottom: 1px solid #ddd;
+}
+
+.model-table-name, .model-table-name-header {
+	width: 70%;
+}
+
+.model-table-value {
+	text-align: right;
+}
+
+.model-table-value, .model-table-value-header {
+	width: 20%;
+	max-width: 140px;
+}
+
+.model-table-control, .model-table-control-header {
+	width: 10%;
+	max-width: 35px;
+	text-align: center;
 }
