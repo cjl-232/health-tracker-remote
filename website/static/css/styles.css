@@ -1,6 +1,6 @@
 body {
 	padding: 0;
-	margin: 0;
+	margin: 2.5%;
 }
 
 section {
@@ -8,6 +8,29 @@ section {
 	flex-wrap: wrap;
 	width: 100%;
 }
+
+/* Tables */
+
+table {
+	border-collapse: collapse;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+	width: 100%;
+}
+
+table thead tr {
+	background-color: #327a2f;
+	color: #ffffff;
+}
+
+table tbody tr:nth-child(even) {
+	background-color: #f2f2f2;
+}
+
+table tbody tr td.numeric-cell {
+	text-align: right;
+}
+
+
 
 .main-navbar {
 	margin: 0px;
@@ -111,4 +134,95 @@ section {
 
 .form-submit-button {
 	margin-left: 5px;
+}
+
+.model-list {
+	list-style: none;
+}
+
+.model-list-object {
+	display: flex;
+    align-items: center;
+}
+
+.model-list-name {
+	height: 100%;
+	width: 60%;
+	max-width: 240px;
+}
+
+.model-list-form {
+	height: 100%;
+	width: 100%;
+	max-width: 840px;
+}
+
+.model-list-form .controls {
+	display: flex;
+	align-content: stretch;
+	width: 100%;
+	max-width: 840px;
+}
+
+.filter-input, .delete-button {
+	margin: 5px;
+}
+
+.filter-input {
+	flex-grow: 1;
+}
+
+.model-table {
+	
+}
+
+.delete-button {
+	flex-shrink: 0;
+	flex-basis: auto;
+}
+
+.model-table {
+	border-collapse: collapse;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.model-table tr:nth-child(odd) {
+	background-color: #f2f2f2;
+}
+
+.model-table tr:nth-child(1) {
+	background-color: #04AA6D;
+}
+
+.model-table td {
+    word-break: break-word;
+}
+
+.model-table th {
+}
+
+.model-table th, .model-table td {
+	border-left: 0px;
+	border-right: 0px;
+	border-bottom: 1px solid #ddd;
+}
+
+.model-table-name, .model-table-name-header {
+	width: 70%;
+}
+
+.model-table-value {
+	text-align: right;
+}
+
+.model-table-value, .model-table-value-header {
+	width: 20%;
+	max-width: 140px;
+}
+
+.model-table-control, .model-table-control-header {
+	width: 10%;
+	max-width: 35px;
+	text-align: center;
 }

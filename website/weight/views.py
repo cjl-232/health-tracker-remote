@@ -174,7 +174,7 @@ def index_view(request):
             #'displayModeBar': False,
         },
     )
-    return render(request, 'weight/index.html', context = context)
+    return render(request, 'weight/index.html', context)
 
 @login_required
 def setup_view(request):
@@ -205,4 +205,4 @@ def setup_view(request):
         context['user_info_form'] = UserInfoForm()
     
     #Render the page with the provided context:
-    return render(request, 'weight/setup.html', context = context)
+    return render(request, 'weight/setup.html', context)
